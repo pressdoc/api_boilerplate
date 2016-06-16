@@ -12,9 +12,9 @@ module JWT
       raise Unauthorized, "Access Denied: Bearer token not supplied."
     end
 
-    aud, iat, iss, secret = [ AUDIENCE, Time.at(date_header.to_i), ISSUER, ENV['APP_SECRET'] ]
+    aud, iat, iss, secret = [ AUDIENCE, date_header, ISSUER, ENV['APP_SECRET'] ]
     verify_jti = proc { |jti|
-      jti == Digest::SHA1.hexdigest([secret, iat.to_datetime.to_s, aud, iss].join(':').to_s)
+      jti == Digest::SHA1.hexdigest([secret, iat, aud, iss].join(':').to_s)
     }
     options = { aud: aud, iat: iat, iss: iss, leeway: 1800, verify_aud: true, verify_iat: true, verify_iss: true, verify_jti: verify_jti, algorithm: ALGORITHM }
     begin
